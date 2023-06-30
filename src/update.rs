@@ -17,7 +17,6 @@ pub fn update(msg: Msg, model: &mut Model, _: &mut impl Orders<Msg>) {
     match msg {
         Msg::Search(needle) => {
             model.needle = needle;
-            todo!("Search for `{}`", model.needle)
         },
         Msg::Fetched(Ok(response)) => {
             model.haystack = Ok(response);

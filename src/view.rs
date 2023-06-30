@@ -1,8 +1,11 @@
-use std::{path::PathBuf, iter::FromIterator};
+use std::{iter::FromIterator, path::PathBuf};
 
 use seed::{prelude::*, *};
 
-use crate::{model::{Model, Reference, HaystackError}, update::Msg};
+use crate::{
+    model::{HaystackError, Model, Reference},
+    update::Msg,
+};
 
 // ------ ------
 //     View
@@ -19,14 +22,14 @@ pub fn view(model: &Model) -> Node<Msg> {
 
 fn search_item(refr: &Reference) -> Node<Msg> {
     let p = PathBuf::from_iter(["static", "agda-html", &refr.href])
-        .to_str().unwrap_or_default().to_string();
-                        
+        .to_str()
+        .unwrap_or_default()
+        .to_string();
+
     li![
         C!["indexentry"],
         a![
-            mouse_ev(
-                Ev::Click, |_| Msg::Display(p)
-            ),
+            mouse_ev(Ev::Click, |_| Msg::Display(p)),
             span![C!["name"], refr.identifier.clone()],
             span![C!["package", "dimmed"], "cubical"],
             br![],
@@ -35,7 +38,10 @@ fn search_item(refr: &Reference) -> Node<Msg> {
     ]
 }
 
-fn sidebar(needle: &str, haystack: &Result<Vec<Reference>, HaystackError>) -> Node<Msg> {
+fn sidebar(
+    needle: &str,
+    haystack: &Result<Vec<Reference>, HaystackError>,
+) -> Node<Msg> {
     div![
         id!("sidebar"),
         div![
@@ -50,24 +56,20 @@ fn sidebar(needle: &str, haystack: &Result<Vec<Reference>, HaystackError>) -> No
                 id!("i2d_searchbox"),
                 input_ev(Ev::Input, Msg::Search),
             ],
-            span![
-                C!["key-shortcut"],
-                "Tab ⇥"
-            ],
+            span![C!["key-shortcut"], "Tab ⇥"],
         ],
-        ul![
-            id!("i2d_search_results"),
-            match haystack {
-                Ok(haystack) => haystack.iter().map(|refr| {
-                    search_item(refr)
-                }).collect(),
-                Err(_) => vec![li!["Error".to_owned()]],
-            }
-        ]
+        match haystack {
+            Ok(haystack) => ul![
+                id!("i2d_search_results"),
+                haystack
+                    .iter()
+                    .filter(|refr| refr.identifier.contains(needle))
+                    .map(|refr| { search_item(refr) })
+            ],
+            Err(_) => ul![id!("i2d_search_results"), nodes![li!["Error"]]],
+        }
     ]
 }
-
-
 
 fn doc_view(url: &Option<String>) -> Node<Msg> {
     match url {
@@ -80,6 +82,6 @@ fn doc_view(url: &Option<String>) -> Node<Msg> {
                 At::Src => url
             }
         ],
-        None => div!["No URL"]
+        None => div!["No URL"],
     }
 }
