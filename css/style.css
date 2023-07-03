@@ -147,5 +147,11 @@ html, body {
 }
 
 * {
-  box-sizing: inherit;
+  /* box-sizing: inherit; */
+}
+
+#app {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
