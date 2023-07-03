@@ -1,6 +1,6 @@
 use probly_search::{
     index::{add_document_to_index, create_index, Index},
-    query::{query, score::default::bm25, QueryResult},
+    query::{query, score::default::bm25},
 };
 
 use crate::model::Reference;
@@ -14,7 +14,7 @@ fn tokenizer(s: &str) -> Vec<String> {
     s.split_whitespace().map(|s| s.to_string()).collect()
 }
 
-fn identifier_accessor(refr: &Reference) -> Option<&str> {
+fn identifier_accessor<'a>(refr: &'a &Reference) -> Option<&'a str> {
     Some(refr.identifier.as_str())
 }
 
@@ -25,7 +25,7 @@ fn id_filter(s: &str) -> String {
 impl SearchEngine {
     pub fn new(haystack: Vec<Reference>) -> Self {
         let mut index = create_index(1);
-        for (idx, refr) in haystack.clone().into_iter().enumerate() {
+        for (idx, refr) in haystack.iter().enumerate() {
             add_document_to_index(
                 &mut index,
                 &[identifier_accessor],
@@ -50,7 +50,6 @@ impl SearchEngine {
         )
         .into_iter()
         .filter_map(|qr| self.haystack.get(qr.key))
-        .cloned()
-        .collect()
+        .cloned().collect()
     }
 }

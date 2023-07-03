@@ -32,15 +32,15 @@ impl Error for FetchError {}
 
 #[derive(Debug, PartialEq)]
 pub enum HaystackError {
-    ParseError,
-    FetchError,
+    _ParseError,
+    _FetchError,
 }
 
 impl Display for HaystackError {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
-            HaystackError::ParseError => write!(f, "ParseError"),
-            HaystackError::FetchError => write!(f, "FetchError"),
+            HaystackError::_ParseError => write!(f, "ParseError"),
+            HaystackError::_FetchError => write!(f, "FetchError"),
         }
     }
 }

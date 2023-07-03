@@ -1,4 +1,4 @@
-use seed::{prelude::*, *};
+use seed::prelude::*;
 
 use crate::{model::{Model, Reference, FetchError}, search::SearchEngine};
 
@@ -19,8 +19,8 @@ pub fn update(msg: Msg, model: &mut Model, _: &mut impl Orders<Msg>) {
             model.search_results = model.search_engine.search(&needle);
         },
         Msg::Fetched(Ok(response)) => {
-            model.search_results = response.clone();
             model.search_engine = SearchEngine::new(response);
+            model.search_results = model.search_engine.haystack.clone();
         },
         Msg::Fetched(Err(_)) => (),
         Msg::Display(url) => {

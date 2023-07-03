@@ -4,7 +4,7 @@
 #![allow(clippy::wildcard_imports)]
 
 use search::SearchEngine;
-use seed::{fetch, prelude::*, *};
+use seed::prelude::*;
 
 mod model;
 use model::{FetchError, Model, Reference};
@@ -42,6 +42,8 @@ fn init(_: Url, orders: &mut impl Orders<Msg>) -> Model {
 // (This function is invoked by `init` function in `index.html`.)
 #[wasm_bindgen(start)]
 pub fn start() {
+    wasm_logger::init(wasm_logger::Config::default());
+
     // Mount the `app` to the element with the `id` "app".
     App::start("app", init, update, view);
 }
