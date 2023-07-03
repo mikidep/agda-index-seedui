@@ -3,7 +3,7 @@ use std::{iter::FromIterator, path::PathBuf};
 use seed::{prelude::*, *};
 
 use crate::{
-    model::{HaystackError, Model, Reference},
+    model::{Model, Reference},
     update::Msg,
 };
 
@@ -15,7 +15,7 @@ use crate::{
 pub fn view(model: &Model) -> Node<Msg> {
     div![
         C!["flex-container"],
-        sidebar(&model.needle, &model.haystack),
+        sidebar(&model.search_results),
         div![id!("content"), doc_view(&model.frame_url),]
     ]
 }
@@ -38,10 +38,7 @@ fn search_item(refr: &Reference) -> Node<Msg> {
     ]
 }
 
-fn sidebar(
-    needle: &str,
-    haystack: &Result<Vec<Reference>, HaystackError>,
-) -> Node<Msg> {
+fn sidebar(search_results: &Vec<Reference>) -> Node<Msg> {
     div![
         id!("sidebar"),
         div![
@@ -49,25 +46,18 @@ fn sidebar(
             input![
                 attrs! {
                     At::Placeholder => "Search...",
-                    At::Value => needle,
                     At::Type => "text"
                 },
                 C!["searchbox"],
                 id!("i2d_searchbox"),
-                input_ev(Ev::Input, Msg::Search),
+                input_ev(Ev::Change, Msg::Search),
             ],
             span![C!["key-shortcut"], "Tab ⇥"],
         ],
-        match haystack {
-            Ok(haystack) => ul![
-                id!("i2d_search_results"),
-                haystack
-                    .iter()
-                    .filter(|refr| refr.identifier.contains(needle))
-                    .map(|refr| { search_item(refr) })
-            ],
-            Err(_) => ul![id!("i2d_search_results"), nodes![li!["Error"]]],
-        }
+        ul![
+            id!("i2d_search_results"),
+            search_results.iter().map(search_item)
+        ]
     ]
 }
 

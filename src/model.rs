@@ -6,6 +6,8 @@ use std::{fmt::Display, error::Error};
 
 use serde::Deserialize;
 
+use crate::search::SearchEngine;
+
 #[derive(Debug, PartialEq)]
 pub struct ParseError;
 
@@ -57,7 +59,7 @@ pub struct Reference {
 
 // `Model` describes our app state.
 pub struct Model {
-    pub needle: String,
-    pub haystack: Result<Vec<Reference>, HaystackError>,
-    pub frame_url: Option<String>
+    pub frame_url: Option<String>,
+    pub search_engine: SearchEngine,
+    pub search_results: Vec<Reference>,
 }

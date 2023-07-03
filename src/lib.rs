@@ -3,6 +3,7 @@
 // but some rules are too "annoying" or are not applicable for your case.)
 #![allow(clippy::wildcard_imports)]
 
+use search::SearchEngine;
 use seed::{fetch, prelude::*, *};
 
 mod model;
@@ -11,6 +12,7 @@ mod view;
 use view::view;
 mod update;
 use update::{update, Msg};
+mod search;
 // ------ ------
 //     Init
 // ------ ------
@@ -27,9 +29,9 @@ async fn fetch_db() -> Result<Vec<Reference>, FetchError> {
 fn init(_: Url, orders: &mut impl Orders<Msg>) -> Model {
     orders.perform_cmd(async { Msg::Fetched(fetch_db().await) });
     Model {
-        needle: "".into(),
-        haystack: Ok(vec![]),
-        frame_url: None
+        frame_url: None,
+        search_engine: SearchEngine::new(vec![]),
+        search_results: vec![],
     }
 }
 

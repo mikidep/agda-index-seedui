@@ -1,6 +1,6 @@
 use seed::{prelude::*, *};
 
-use crate::model::{Model, Reference, FetchError, HaystackError};
+use crate::{model::{Model, Reference, FetchError}, search::SearchEngine};
 
 // ------ ------
 //    Update
@@ -16,14 +16,13 @@ pub enum Msg {
 pub fn update(msg: Msg, model: &mut Model, _: &mut impl Orders<Msg>) {
     match msg {
         Msg::Search(needle) => {
-            model.needle = needle;
+            model.search_results = model.search_engine.search(&needle);
         },
         Msg::Fetched(Ok(response)) => {
-            model.haystack = Ok(response);
+            model.search_results = response.clone();
+            model.search_engine = SearchEngine::new(response);
         },
-        Msg::Fetched(Err(_)) => {
-            model.haystack = Err(HaystackError::FetchError);
-        },
+        Msg::Fetched(Err(_)) => (),
         Msg::Display(url) => {
             model.frame_url = Some(url);
         }
