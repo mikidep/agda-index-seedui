@@ -7,7 +7,7 @@ use search::SearchEngine;
 use seed::prelude::*;
 
 mod model;
-use model::{FetchError, Model, Reference};
+use model::{FetchError, Reference};
 mod view;
 use view::view;
 mod update;
@@ -16,6 +16,9 @@ mod search;
 // ------ ------
 //     Init
 // ------ ------
+
+type SE = search::probly::ProblySearchEngine;
+pub type Model = model::Model<SE>;
 
 async fn fetch_db() -> Result<Vec<Reference>, FetchError> {
     let res = fetch("/static/ingestible.json")
@@ -43,7 +46,28 @@ fn init(_: Url, orders: &mut impl Orders<Msg>) -> Model {
 #[wasm_bindgen(start)]
 pub fn start() {
     wasm_logger::init(wasm_logger::Config::default());
-
     // Mount the `app` to the element with the `id` "app".
     App::start("app", init, update, view);
+}
+
+#[macro_export]
+macro_rules! time {
+    ($it: expr) => {
+        {
+            web_sys::console::time_with_label(stringify!($it));
+            let ret = $it;
+            web_sys::console::time_end_with_label(stringify!($it));
+            ret
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! dbg {
+    ($it: expr) => {
+        {
+            log::debug!("{}: {:?}", stringify!($it), $it);
+            $it
+        }
+    };
 }

@@ -2,10 +2,7 @@ use std::{iter::FromIterator, path::PathBuf};
 
 use seed::{prelude::*, *};
 
-use crate::{
-    model::{Model, Reference},
-    update::Msg,
-};
+use crate::{model::CountedReference, update::Msg, Model};
 
 // ------ ------
 //     View
@@ -20,13 +17,14 @@ pub fn view(model: &Model) -> Node<Msg> {
     ]
 }
 
-fn search_item(refr: &Reference) -> Node<Msg> {
+fn search_item((idx, refr): &CountedReference) -> Node<Msg> {
     let p = PathBuf::from_iter(["static", "agda-html", &refr.href])
         .to_str()
         .unwrap_or_default()
         .to_string();
 
     li![
+        el_key(idx),
         C!["indexentry"],
         a![
             mouse_ev(Ev::Click, |_| Msg::Display(p)),
@@ -38,7 +36,7 @@ fn search_item(refr: &Reference) -> Node<Msg> {
     ]
 }
 
-fn sidebar(search_results: &Vec<Reference>) -> Node<Msg> {
+fn sidebar(search_results: &Vec<CountedReference>) -> Node<Msg> {
     div![
         id!("sidebar"),
         div![
@@ -50,13 +48,13 @@ fn sidebar(search_results: &Vec<Reference>) -> Node<Msg> {
                 },
                 C!["searchbox"],
                 id!("i2d_searchbox"),
-                input_ev(Ev::Change, Msg::Search),
+                input_ev(Ev::Input, Msg::Search),
             ],
             span![C!["key-shortcut"], "Tab ⇥"],
         ],
         ul![
             id!("i2d_search_results"),
-            search_results.iter().map(search_item)
+            search_results.iter().take(100).map(search_item)
         ]
     ]
 }

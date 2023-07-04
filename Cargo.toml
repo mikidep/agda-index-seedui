@@ -24,7 +24,8 @@ console_error_panic_hook = "0.1.7"
 wasm-logger = "0.2.0"
 log = "0.4.19"
 probly-search = "1.2.4"
-
+fuzzy-matcher = "*"
+sublime_fuzzy = "0.7.0"
 
 [profile.release]
 lto = true

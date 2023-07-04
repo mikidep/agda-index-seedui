@@ -49,17 +49,19 @@ impl Error for HaystackError {}
 
 #[derive(Debug, PartialEq, Clone, Deserialize)]
 pub struct Reference {
-    pub id : String,
-    pub identifier : String,
-    pub qualified : String,
-    pub module : String,
-    pub href : String,
-    pub content : String,
+    pub id: String,
+    pub identifier: String,
+    pub qualified: String,
+    pub module: String,
+    pub href: String,
+    pub content: String,
 }
 
+pub type CountedReference = (usize, Reference);
+
 // `Model` describes our app state.
-pub struct Model {
+pub struct Model<SE: SearchEngine> {
     pub frame_url: Option<String>,
-    pub search_engine: SearchEngine,
-    pub search_results: Vec<Reference>,
+    pub search_engine: SE,
+    pub search_results: Vec<CountedReference>,
 }
